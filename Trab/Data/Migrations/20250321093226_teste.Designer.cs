@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Trab.Data;
 
@@ -11,9 +12,11 @@ using Trab.Data;
 namespace Trab.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250321093226_teste")]
+    partial class teste
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -224,136 +227,6 @@ namespace Trab.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Trab.Models.Aluno", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Al")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Alunos");
-                });
-
-            modelBuilder.Entity("Trab.Models.AlunoTurma", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("IdAluno")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdTurma")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IdAluno");
-
-                    b.HasIndex("IdTurma");
-
-                    b.ToTable("AlunoTurmas");
-                });
-
-            modelBuilder.Entity("Trab.Models.Presenca", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("Data")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Estado")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("IdAluno")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdTurma")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IdAluno");
-
-                    b.HasIndex("IdTurma");
-
-                    b.ToTable("Presencas");
-                });
-
-            modelBuilder.Entity("Trab.Models.Professor", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Professores");
-                });
-
-            modelBuilder.Entity("Trab.Models.Turma", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Cadeira")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<TimeSpan>("HorarioInicio")
-                        .HasColumnType("time");
-
-                    b.Property<TimeSpan>("HorasFim")
-                        .HasColumnType("time");
-
-                    b.Property<int>("IdProf")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IdProf");
-
-                    b.ToTable("Turmas");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -403,72 +276,6 @@ namespace Trab.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Trab.Models.AlunoTurma", b =>
-                {
-                    b.HasOne("Trab.Models.Aluno", "Aluno")
-                        .WithMany("AlunoTurmas")
-                        .HasForeignKey("IdAluno")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Trab.Models.Turma", "Turma")
-                        .WithMany("AlunoTurmas")
-                        .HasForeignKey("IdTurma")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Aluno");
-
-                    b.Navigation("Turma");
-                });
-
-            modelBuilder.Entity("Trab.Models.Presenca", b =>
-                {
-                    b.HasOne("Trab.Models.Aluno", "Aluno")
-                        .WithMany()
-                        .HasForeignKey("IdAluno")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Trab.Models.Turma", "Turma")
-                        .WithMany("Presencas")
-                        .HasForeignKey("IdTurma")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Aluno");
-
-                    b.Navigation("Turma");
-                });
-
-            modelBuilder.Entity("Trab.Models.Turma", b =>
-                {
-                    b.HasOne("Trab.Models.Professor", "Professor")
-                        .WithMany("Turmas")
-                        .HasForeignKey("IdProf")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Professor");
-                });
-
-            modelBuilder.Entity("Trab.Models.Aluno", b =>
-                {
-                    b.Navigation("AlunoTurmas");
-                });
-
-            modelBuilder.Entity("Trab.Models.Professor", b =>
-                {
-                    b.Navigation("Turmas");
-                });
-
-            modelBuilder.Entity("Trab.Models.Turma", b =>
-                {
-                    b.Navigation("AlunoTurmas");
-
-                    b.Navigation("Presencas");
                 });
 #pragma warning restore 612, 618
         }

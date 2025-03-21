@@ -9,4 +9,11 @@ public class ApplicationDbContext : IdentityDbContext
         : base(options)
     {
     }
+
+    public DbSet<Trab.Models.Aluno> Alunos { get; set; }
+    public DbSet<Trab.Models.AlunoTurma> AlunoTurmas { get; set; }
+    public DbSet<Trab.Models.Presenca> Presencas { get; set; }
+    public DbSet<Trab.Models.Professor> Professores { get; set; }
+    public DbSet<Trab.Models.Turma> Turmas { get; set; }
+
 }
