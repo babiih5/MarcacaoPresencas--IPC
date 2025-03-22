@@ -15,10 +15,17 @@ namespace Trab.Models
         public string? Nome { get; set; }
 
         [Required]
+        [RegularExpression(@"^(Segunda|Terça|Quarta|Quinta|Sexta)$")]
+        public string? DiaSemana { get; set; }
+
+        [Required]
         public TimeSpan? HorarioInicio { get; set; }
 
         [Required]
         public TimeSpan? HorasFim { get; set; }
+
+        [Required]
+        public string? Sala { get; set; }
 
         [ForeignKey("Professor")]
         public int IdProf { get; set; }

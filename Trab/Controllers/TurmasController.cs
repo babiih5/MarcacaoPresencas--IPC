@@ -57,7 +57,7 @@ namespace Trab.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Cadeira,Nome,HorarioInicio,HorasFim,IdProf")] Turma turma, string horarioInicio, string horasFim)
+        public async Task<IActionResult> Create([Bind("Id,Cadeira,Nome,DiaSemana,HorarioInicio,HorasFim,Sala,IdProf")] Turma turma, string horarioInicio, string horasFim)
         {
             if (ModelState.IsValid)
             {
@@ -94,7 +94,7 @@ namespace Trab.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Cadeira,Nome,HorarioInicio,HorasFim,IdProf")] Turma turma)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Cadeira,Nome,DiaSemana,HorarioInicio,HorasFim,Sala,IdProf")] Turma turma)
         {
             if (id != turma.Id)
             {
