@@ -1,0 +1,37 @@
+﻿@model IEnumerable<Trab.Models.AlunoTurma>
+
+@{
+    ViewData["Title"] = "Alunos de " + ViewBag.CadeiraNome + " - " + ViewBag.TurmaNome;
+}
+
+<h1>Alunos da @ViewBag.CadeiraNome - @ViewBag.TurmaNome</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-success">Adicionar Aluno</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Turma</th>
+            <th>Aluno</th>
+            <th>Número Mecanográfico</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Turma.Nome</td>
+                <td>@item.Aluno.Nome</td>
+                <td>@item.Aluno.Al</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Editar</a>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Detalhes</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Excluir</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
