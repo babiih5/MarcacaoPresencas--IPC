@@ -19,21 +19,36 @@ namespace Trab.Controllers
             _context = context;
         }
 
-        // GET: AlunosTurma
+        // GET: AlunosTurma/Index
         public async Task<IActionResult> Index(int? id)
         {
-            var alunosDaTurma = _context.AlunoTurmas
-            .Where(at => at.IdTurma == id)
-            .Include(at => at.Aluno)  // Garante que os dados do Aluno sejam carregados
-            .Include(at => at.Turma)  // Garante que os dados da Turma sejam carregados
-            .ToList();
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-            var turma = alunosDaTurma.First().Turma;
-            ViewBag.TurmaNome = turma.Nome;
-            ViewBag.CadeiraNome = turma.Cadeira;
+            var alunosDaTurma = await _context.AlunoTurmas
+                .Where(at => at.IdTurma == id)
+                .Include(at => at.Aluno)
+                .Include(at => at.Turma)
+                .ToListAsync();
+
+            var turma = alunosDaTurma.FirstOrDefault()?.Turma;
+            if (turma != null)
+            {
+                ViewBag.TurmaNome = turma.Nome;
+                ViewBag.CadeiraNome = turma.Cadeira;
+                ViewBag.IdTurma = turma.Id;
+            }
+            else
+            {
+                Console.WriteLine("Turma não encontrada!");
+            }
 
             return View(alunosDaTurma);
         }
+
+
 
         // GET: AlunosTurma/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -55,31 +70,46 @@ namespace Trab.Controllers
             return View(alunoTurma);
         }
 
+
         // GET: AlunosTurma/Create
-        public IActionResult Create()
+        public IActionResult Create(int idTurma)
         {
-            ViewData["IdAluno"] = new SelectList(_context.Alunos, "Id", "Email");
-            ViewData["IdTurma"] = new SelectList(_context.Turmas, "Id", "Cadeira");
+            Console.WriteLine($"IdTurma recebido: {idTurma}"); // Para debug
+
+            // Passa a turma automaticamente
+            ViewBag.IdTurma = idTurma;
+
+            // Carrega a lista de alunos no formato correto
+            ViewBag.IdAluno = new SelectList(_context.Alunos, "Al", "Nome");
+
             return View();
         }
 
+
         // POST: AlunosTurma/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,IdTurma,IdAluno")] AlunoTurma alunoTurma)
+        public async Task<IActionResult> Create([Bind("IdTurma,IdAluno")] AlunoTurma alunoTurma)
         {
+            var aluno = await _context.Alunos.FirstOrDefaultAsync(a => a.Al == alunoTurma.IdAluno);
+            Console.WriteLine($"IdTurma recebido: {alunoTurma.IdAluno}");
+
+
             if (ModelState.IsValid)
             {
+                alunoTurma.IdAluno = aluno.Id;
                 _context.Add(alunoTurma);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                Console.WriteLine("AlunoTurma adicionado com sucesso!");
+
+                return RedirectToAction(nameof(Index), new { id = alunoTurma.IdTurma });
             }
-            ViewData["IdAluno"] = new SelectList(_context.Alunos, "Id", "Email", alunoTurma.IdAluno);
-            ViewData["IdTurma"] = new SelectList(_context.Turmas, "Id", "Cadeira", alunoTurma.IdTurma);
+
+            ViewBag.IdAluno = new SelectList(_context.Alunos, "Al", "Nome", alunoTurma.IdAluno);
             return View(alunoTurma);
         }
+
+
 
         // GET: AlunosTurma/Edit/5
         public async Task<IActionResult> Edit(int? id)

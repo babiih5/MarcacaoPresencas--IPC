@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,10 +21,14 @@ namespace Trab.Controllers
         }
 
         // GET: Turmas
+        [Authorize(Roles = "Professor")]
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.Turmas.Include(t => t.Professor);
-            return View(await applicationDbContext.ToListAsync());
+            var userName = User.Identity?.Name;
+            var professorid = _context.Professores.FirstOrDefault(p => p.Email == userName)?.Id;
+            var TurmasFiltradas = applicationDbContext.Where(t => t.IdProf == professorid);
+            return View(await TurmasFiltradas.ToListAsync());
         }
 
         // GET: Turmas/Details/5
@@ -45,6 +50,7 @@ namespace Trab.Controllers
             return View(turma);
         }
 
+        [Authorize(Roles = "Professor")]
         // GET: Turmas/Create
         public IActionResult Create()
         {
@@ -52,6 +58,7 @@ namespace Trab.Controllers
             return View();
         }
 
+        [Authorize(Roles = "Professor")]
         // POST: Turmas/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -61,6 +68,13 @@ namespace Trab.Controllers
         {
             if (ModelState.IsValid)
             {
+                var userName = User.Identity?.Name;
+                var professor = _context.Professores.FirstOrDefault(p => p.Email == userName);
+
+                if (professor == null) {
+                    return NotFound();
+                }
+                turma.IdProf = professor.Id;
                 turma.HorarioInicio = TimeSpan.Parse(horarioInicio);
                 turma.HorasFim = TimeSpan.Parse(horasFim);
 

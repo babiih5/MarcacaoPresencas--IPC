@@ -27,6 +27,9 @@ namespace Trab.Models
         [Required]
         public string? Sala { get; set; }
 
+        [Required]
+        public bool PresencasAtivas { get; set; }
+
         [ForeignKey("Professor")]
         public int IdProf { get; set; }
         public Professor? Professor { get; set; }

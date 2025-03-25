@@ -7,7 +7,7 @@
 <h1>Alunos da @ViewBag.CadeiraNome - @ViewBag.TurmaNome</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-success">Adicionar Aluno</a>
+    <a asp-action="Create" asp-route-idTurma="@ViewBag.IdTurma">Adicionar Aluno à Turma</a>
 </p>
 
 <table class="table table-striped">

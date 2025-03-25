@@ -8,8 +8,19 @@
     {
         <h1 class="display-4">Welcome Professor</h1>
     }
-	@if (User.IsInRole("Aluno"))
-	{
-		<h1 class="display-4">Welcome Aluno</h1>
+    @if (User.IsInRole("Aluno"))
+    {
+        @if (ViewData["Cadeira"] == null || ViewData["Turma"] == null)
+        {
+            <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                <h2>Não há presenças ativas</h2>
+            </div>
+        }
+        <h1>
+			Marcação de presença na aula de @ViewData["Cadeira"] - @ViewData["Turma"]
+        </h1>
+        <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+            <button class="btn btn-success" style="font-size: 2.5rem; padding: 1.5rem 3rem; width: 80%; max-width: 600px; height: auto;">Presente</button>
+        </div>
 	}
 </div>

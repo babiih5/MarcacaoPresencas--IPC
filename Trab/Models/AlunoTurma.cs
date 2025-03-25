@@ -10,10 +10,10 @@ namespace Trab.Models
 
         [ForeignKey("Turma")]
         public int IdTurma { get; set; }
-        public Turma Turma { get; set; }
+        public Turma? Turma { get; set; }
 
         [ForeignKey("Aluno")]
         public int IdAluno { get; set; }
-        public Aluno Aluno { get; set; }
+        public Aluno? Aluno { get; set; }
     }
 }
