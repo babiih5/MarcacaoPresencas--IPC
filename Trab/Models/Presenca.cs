@@ -10,13 +10,13 @@ namespace Trab.Models
 
         [ForeignKey("Aluno")]
         public int IdAluno { get; set; }
-        public Aluno Aluno { get; set; }
+        public Aluno? Aluno { get; set; }
 
         [ForeignKey("Turma")]
         public int IdTurma { get; set; }
-        public Turma Turma { get; set; }
+        public Turma? Turma { get; set; }
 
         public DateTime Data { get; set; }
-        public string Estado { get; set; } // presente ou falta
+        public bool Estado { get; set; } // presente ou falta
     }
 }
