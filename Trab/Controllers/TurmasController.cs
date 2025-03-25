@@ -28,6 +28,7 @@ namespace Trab.Controllers
             var userName = User.Identity?.Name;
             var professorid = _context.Professores.FirstOrDefault(p => p.Email == userName)?.Id;
             var TurmasFiltradas = applicationDbContext.Where(t => t.IdProf == professorid);
+
             return View(await TurmasFiltradas.ToListAsync());
         }
 

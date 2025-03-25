@@ -19,6 +19,12 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
+        //Verificar se o usuário logado é um aluno
+        if (!User.Identity.IsAuthenticated || !User.IsInRole("Aluno"))
+        {
+            return View();
+        }
+
         //Descobrir o id na tabela "Aluno" do aluno logado
         var userName = User.Identity?.Name;
         int username_convertido = Convert.ToInt32(userName);

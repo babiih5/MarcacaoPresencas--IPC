@@ -33,17 +33,14 @@ namespace Trab.Controllers
                 .Include(at => at.Turma)
                 .ToListAsync();
 
-            var turma = alunosDaTurma.FirstOrDefault()?.Turma;
-            if (turma != null)
+            var turma = _context.Turmas.FirstOrDefault(t => t.Id == id);
+            if (turma == null)
             {
-                ViewBag.TurmaNome = turma.Nome;
-                ViewBag.CadeiraNome = turma.Cadeira;
-                ViewBag.IdTurma = turma.Id;
+                return NotFound();
             }
-            else
-            {
-                Console.WriteLine("Turma não encontrada!");
-            }
+            ViewBag.TurmaNome = turma.Nome;
+            ViewBag.CadeiraNome = turma.Cadeira;
+            ViewBag.IdTurma = turma.Id;
 
             return View(alunosDaTurma);
         }
