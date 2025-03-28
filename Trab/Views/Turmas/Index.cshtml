@@ -16,7 +16,10 @@
                 @Html.DisplayNameFor(model => model.Cadeira)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Nome)
+                Turma
+            </th>
+            <th>
+                Dia
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.HorarioInicio)
@@ -24,37 +27,50 @@
             <th>
                 @Html.DisplayNameFor(model => model.HorasFim)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Professor)
-            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Cadeira)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nome)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.HorarioInicio)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.HorasFim)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Professor.Email)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+        @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Cadeira)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Nome)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DiaSemana)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.HorarioInicio)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.HorasFim)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Professor.Email)
+                </td>
+                <td>
+                    @* <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                <a asp-controller="AlunosTurma" asp-action="Index" asp-route-id="@item.Id" class="btn btn-primary">
-                     Ver Alunos
-                </a>
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> *@
+                    <a asp-controller="AlunosTurma" asp-action="Index" asp-route-id="@item.Id" class="btn btn-primary">
+                        Ver Alunos
+                    </a>
+                    @if (item.PresencasAtivas == false)
+                    {
+                        <a asp-action="AtivarPresencas" asp-route-id="@item.Id" class="btn btn-success">
+                            Ativar Presenças
+                        </a>
+                    }
+					else
+					{
+						<a asp-action="AtivarPresencas" asp-route-id="@item.Id" class="btn btn-danger">
+							Desativar Presenças
+						</a>
+					}
+                
             </td>
         </tr>
 }

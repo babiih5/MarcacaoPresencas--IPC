@@ -174,9 +174,64 @@ namespace Trab.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        //Ativar Presenças
+        [Authorize(Roles = "Professor")]
+        public async Task<IActionResult> AtivarPresencas(int? id)
+        {
+       
+            if (id== null)
+            {
+                return NotFound();
+            }
+
+            //Mudar o atributo PresencasAtivas para true
+            var turma = await _context.Turmas.FindAsync(id);
+ 
+            if (turma == null)
+            {
+                return NotFound();
+            }
+
+            if (turma.PresencasAtivas == true)
+            {
+              
+                turma.PresencasAtivas = false;
+                _context.Update(turma);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                turma.PresencasAtivas = true;
+                _context.Update(turma);
+                await _context.SaveChangesAsync();
+
+                //Guardar todos os alunos da turma na tabela presencas através da tabela AlunosTurma com o estado de falta
+                var alunos = _context.AlunoTurmas.Where(at => at.IdTurma == turma.Id).ToList();
+                foreach (var aluno in alunos)
+                {
+                    Presenca presenca = new Presenca();
+                    presenca.IdAluno = aluno.IdAluno;
+                    presenca.IdTurma = turma.Id;
+                    presenca.Data = DateTime.Now;
+                    presenca.Estado = false;
+                    _context.Add(presenca);
+                    await _context.SaveChangesAsync();
+                }
+                return RedirectToAction(nameof(Index));
+            }
+                
+        }
+
+
         private bool TurmaExists(int id)
         {
             return _context.Turmas.Any(e => e.Id == id);
         }
+
+      
+
     }
+
+
 }
