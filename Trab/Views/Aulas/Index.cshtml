@@ -1,0 +1,87 @@
+﻿@model IEnumerable<Trab.Models.Aula>
+
+@{
+    ViewData["Title"] = "Aulas";
+    var cadeiras = ViewBag.Cadeiras as List<string> ?? new();
+    var turmas = ViewBag.Turmas as List<string> ?? new();
+}
+
+<main role="main" class="container my-4" aria-labelledby="page-title">
+    <h1 id="page-title" class="display-4 mb-4">Aulas</h1>
+
+    <!-- Filtros -->
+    <form method="get" class="mb-4 d-flex flex-wrap gap-2" role="search" aria-label="Filtros de Aulas">
+        <select name="cadeira" class="btn btn-danger" aria-label="Filtrar por Cadeira">
+            <option value="">Cadeira</option>
+            @foreach (var c in cadeiras)
+            {
+                <option value="@c">@c</option>
+            }
+        </select>
+
+        <select name="turma" class="btn btn-danger" aria-label="Filtrar por Turma">
+            <option value="">Turmas</option>
+            @foreach (var t in turmas)
+            {
+                <option value="@t">@t</option>
+            }
+        </select>
+
+        <div class="dropdown">
+            <button class="btn btn-danger dropdown-toggle" type="button" id="dropdownData" data-bs-toggle="dropdown" aria-expanded="false">
+                Datas
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownData">
+                <li><input type="date" name="data" class="dropdown-item" aria-label="Selecionar Data" /></li>
+            </ul>
+        </div>
+
+        <button type="submit" class="btn btn-outline-dark" aria-label="Aplicar Filtros">Filtrar</button>
+    </form>
+
+    <!-- Tabela -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle text-center" aria-describedby="descricao-aulas">
+            <caption id="descricao-aulas" class="visually-hidden">
+                Tabela com a lista de aulas, incluindo cadeira, turma, data, horário e opções.
+            </caption>
+            <thead>
+                <tr>
+                    <th scope="col">Cadeira</th>
+                    <th scope="col">Turma</th>
+                    <th scope="col">Data</th>
+                    <th scope="col">Início</th>
+                    <th scope="col">Fim</th>
+                    <th scope="col">Presenças</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Turma?.Cadeira</td>
+                        <td>@item.Turma?.Nome</td>
+                        <td>@item.DataAula.ToString("dd/MM/yyyy")</td>
+                        <td>@item.Turma?.HorarioInicio?.ToString(@"hh\:mm")</td>
+                        <td>@item.Turma?.HorasFim?.ToString(@"hh\:mm")</td>
+                        <td>
+                            <a asp-action="AbrirPresencas" asp-route-id="@item.Id" class="btn btn-danger" aria-label="Abrir presenças para a aula de @item.Turma?.Cadeira">
+                                Abrir Presenças
+                            </a>
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary" aria-label="Editar aula de @item.Turma?.Cadeira">
+                                Editar
+                            </a>
+                        </td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary" aria-label="Ver detalhes da aula de @item.Turma?.Cadeira">
+                                Detalhes
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</main>

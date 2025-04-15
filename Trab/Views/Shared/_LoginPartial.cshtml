@@ -1,26 +1,48 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using Trab.Data
+@using Trab.Models
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
+@inject ApplicationDbContext Context
 
 <ul class="navbar-nav">
-@if (SignInManager.IsSignedIn(User))
-{
-    <li class="nav-item">
-        <a  class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity?.Name!</a>
-    </li>
-    <li class="nav-item">
-        <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-            <button  type="submit" class="nav-link btn btn-link text-dark">Logout</button>
-        </form>
-    </li>
-}
-else
-{
-    @*<li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
-    </li>*@
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Iniciar Sessão</a>
-    </li>
-}
+    @if (SignInManager.IsSignedIn(User))
+    {
+        string displayName = "";
+        var userName = User.Identity?.Name;
+
+        @if (User.IsInRole("Professor"))
+        {
+            var professor = Context.Professores.FirstOrDefault(p => p.Email == User.Identity.Name);
+            displayName = professor?.Nome ?? User.Identity.Name;
+        }
+        else if (User.IsInRole("Aluno"))
+        {
+            // For students, the username is a numeric value (Al)
+            int.TryParse(User.Identity.Name, out int al);
+            var aluno = Context.Alunos.FirstOrDefault(a => a.Al == al);
+            displayName = aluno?.Nome ?? User.Identity.Name;
+        }
+        else
+        {
+            displayName = User.Identity?.Name;
+        }
+
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
+                Olá, @displayName!
+            </a>
+        </li>
+        <li class="nav-item">
+            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+            </form>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Iniciar Sessão</a>
+        </li>
+    }
 </ul>

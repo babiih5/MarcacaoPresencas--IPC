@@ -20,3 +20,137 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+/* Exemplo simples de estilos para o layout */
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Header vermelho */
+.header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #A30000; /* tom de vermelho aproximado */
+    padding: 0.5rem 1rem;
+    color: #fff;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+}
+
+.big-x {
+    font-size: 1.5rem;
+    margin-right: 1rem;
+    cursor: pointer; /* caso queira que o X seja “clicável” */
+}
+
+.site-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* Menu de navegação */
+.nav-links ul {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links li {
+    margin-right: 1rem;
+}
+
+.nav-links a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+    .nav-links a:hover {
+        text-decoration: underline;
+    }
+
+/* Seção de user info no header */
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+    .user-info span {
+        margin-right: 1rem;
+    }
+
+    .user-info a {
+        color: #fff;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+        .user-info a:hover {
+            text-decoration: underline;
+        }
+
+/* Conteúdo principal */
+.main-content {
+    padding: 1rem;
+}
+
+/* Rodapé */
+.footer {
+    background-color: #f2f2f2;
+    text-align: center;
+    padding: 0.5rem;
+    margin-top: 2rem;
+}
+
+.btn-red {
+    background-color: #A30000;
+    color: #fff;
+    border: none;
+}
+
+    .btn-red:hover {
+        background-color: #8b0000; /* ou a cor que preferir */
+    }
+
+.btn-custom {
+    background-color: #a61c1c;
+    color: white;
+    font-weight: bold;
+    border-radius: 2rem;
+    padding: 0.5rem 1.5rem;
+    border: none;
+}
+
+    .btn-custom:hover,
+    .btn-custom:focus {
+        background-color: #7f1515;
+        color: #fff;
+    }
+
+.table-header th {
+    background-color: #a61c1c !important;
+    color: white;
+    font-weight: bold;
+    border-radius: 2rem;
+    padding: 1rem;
+}
+
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+

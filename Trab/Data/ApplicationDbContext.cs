@@ -16,4 +16,6 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<Trab.Models.Professor> Professores { get; set; }
     public DbSet<Trab.Models.Turma> Turmas { get; set; }
 
+    public DbSet<Trab.Models.Aula> Aulas { get; set; }
+
 }

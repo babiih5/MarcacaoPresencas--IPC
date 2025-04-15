@@ -35,5 +35,8 @@ namespace Trab.Models
         public Professor? Professor { get; set; }
         public ICollection<AlunoTurma>? AlunoTurmas { get; set; }
         public ICollection<Presenca>? Presencas { get; set; }
+
+        public ICollection<Aula>? Aulas { get; set; }
+
     }
 }
