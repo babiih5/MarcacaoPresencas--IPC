@@ -189,7 +189,8 @@ namespace Trab.Controllers
             }
 
             //Encontrar a presença do aluno logado na turma
-            var presenca = await _context.Presencas.FirstOrDefaultAsync(p => p.IdAluno == alunoId && p.IdTurma == turmaAtiva.Turma.Id);
+            var today = DateTime.Now.Date;
+            var presenca = await _context.Presencas.FirstOrDefaultAsync(p => p.IdAluno == alunoId && p.IdTurma == turmaAtiva.Turma.Id && p.Data.Date == today);
            Console.WriteLine("PRES: " + presenca.Id);
             if (presenca != null) {
                 Console.WriteLine("ESTOU AQUI");

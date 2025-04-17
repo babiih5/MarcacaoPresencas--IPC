@@ -1,12 +1,81 @@
-﻿@{
+﻿@model IEnumerable<Trab.Models.Aula>
+
+@{
     ViewData["Title"] = "Home Page";
+    string formattedDate = DateTime.Now.ToString("dd/MM/yyyy");
 }
 
 
 <div class="text-center">
     @if (User.IsInRole("Professor"))
     {
-        <h1 class="display-4">Welcome Professor</h1>
+        <main role="main" class="container my-4" aria-labelledby="page-title">
+            <h1 id="page-title" class="display-4 mb-4">As suas aulas de hoje (@formattedDate)</h1>
+
+            @if (Model != null && Model.Any())
+            {
+                <!-- Tabela -->
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped align-middle text-center" aria-describedby="descricao-aulas">
+                        <caption id="descricao-aulas" class="visually-hidden">
+                            Tabela com a lista de aulas de hoje, incluindo cadeira, turma, horário e opções.
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Cadeira</th>
+                                <th scope="col">Turma</th>
+                                <th scope="col">Início</th>
+                                <th scope="col">Fim</th>
+                                <th scope="col">Sala</th>
+                                <th scope="col">Presenças</th>
+                                <th scope="col">Ver Presenças</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.Turma?.Cadeira</td>
+                                    <td>@item.Turma?.Nome</td>
+                                    <td>@item.Turma?.HorarioInicio?.ToString(@"hh\:mm")</td>
+                                    <td>@item.Turma?.HorasFim?.ToString(@"hh\:mm")</td>
+                                    <td>@item.Turma?.Sala</td>
+
+                                    @if (item.Turma?.PresencasAtivas == false)
+                                    {
+                                        <td>
+                                            <a asp-controller="Aulas" asp-action="AtivarPresencas" asp-route-id="@item.Turma?.Id" class="btn btn-danger" aria-label="Ativar presenças para a aula de @item.Turma?.Cadeira">
+                                                Ativar Presenças
+                                            </a>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td>
+                                            <a asp-controller="Aulas" asp-action="AtivarPresencas" asp-route-id="@item.Turma?.Id" class="btn btn-danger" aria-label="Desativar presenças para a aula de @item.Turma?.Cadeira">
+                                                Desativar Presenças
+                                            </a>
+                                        </td>
+                                    }
+
+                                    <td>
+                                        <a asp-controller="Presencas" asp-action="Index" class="btn btn-danger" aria-label="Ver presenças da aula de @item.Turma?.Cadeira">
+                                            Ver Presenças
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info mt-4">
+                    <h2>Não existem aulas programadas para hoje.</h2>
+                </div>
+            }
+        </main>
     }
     @if (User.IsInRole("Aluno"))
     {
@@ -16,11 +85,27 @@
                 <h2>Não há presenças ativas</h2>
             </div>
         }
-        <h1>
-			Marcação de presença na aula de @ViewData["Cadeira"] - @ViewData["Turma"]
-        </h1>
-        <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
-            <a asp-controller="Presencas" asp-action="MarcarPresenca"  class="btn btn-success" style="font-size: 2.5rem; padding: 1.5rem 3rem; width: 80%; max-width: 600px; height: auto;">Presente</a>
-        </div>
+
+        else
+        {
+            //Se o aluno já tiver marcado presença, não exibe o botão
+            @if (ViewData["Presente"] == null)
+            {
+                <h1>
+                    Marcação de presença na aula de @ViewData["Cadeira"] - @ViewData["Turma"]
+                </h1>
+                <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                    <a asp-controller="Presencas" asp-action="MarcarPresenca" class="btn btn-success" style="font-size: 2.5rem; padding: 1.5rem 3rem; width: 80%; max-width: 600px; height: auto;">Presente</a>
+                </div>
+            }
+            else
+            {
+                <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                    <h2>Já marcou presença na aula atual.</h2>
+                </div>
+            }
+
+        }
+        
 	}
 </div>

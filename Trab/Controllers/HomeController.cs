@@ -19,6 +19,27 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
+
+        //Ir buscar as aulas do dia de hoje
+
+        if (User.Identity.IsAuthenticated && User.IsInRole("Professor"))
+        {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            var userNameProf = User.Identity?.Name;
+            var professorId = _context.Professores.FirstOrDefault(p => p.Email == userNameProf)?.Id;
+
+            if (professorId.HasValue)
+            {
+                var todaysClasses = _context.Aulas
+                    .Include(a => a.Turma)
+                    .Where(a => a.DataAula == today && a.Turma.IdProf == professorId.Value)
+                    .ToList();
+
+                return View(todaysClasses);
+            }
+        }
+
+
         //Verificar se o usuário logado é um aluno
         if (!User.Identity.IsAuthenticated || !User.IsInRole("Aluno"))
         {
@@ -36,10 +57,19 @@ public class HomeController : Controller
 
         var turmaAtiva = turmas.FirstOrDefault(t => t.Turma.PresencasAtivas);
 
+        //Levar os estado da presença do aluno logado para a View caso seja true
+        var presencas = _context.Presencas
+            .Where(p => p.IdAluno == alunoId && p.IdTurma == turmaAtiva.Turma.Id).ToList();
+
+        
+        var presente = presencas.FirstOrDefault(p => p.Estado == true);
+
+
         if (turmaAtiva != null)
         {
             ViewData["Cadeira"] = turmaAtiva.Turma.Cadeira;
             ViewData["Turma"] = turmaAtiva.Turma.Nome;
+            ViewData["Presente"] = presente;
         }
 
         return View();

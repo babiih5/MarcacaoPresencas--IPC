@@ -10,8 +10,8 @@
 
     <!-- Botão para adicionar nova cadeira com atributo aria-label descritivo -->
     <p>
-        <a asp-action="Create" class="btn btn-red" aria-label="Adicionar Nova Turma">
-            Adicionar Turma
+        <a asp-action="Create" class="btn btn-red" aria-label="Adicionar nova cadeira">
+            Adicionar Cadeira
         </a>
     </p>
 
@@ -22,7 +22,7 @@
         </caption>
         <thead>
             <tr>
-                <th scope="col">Cadeira</th>
+                <th scope="col">Nome_Cadeira</th>
                 <th scope="col">Turma</th>
                 <th scope="col">Presenças</th>
                 <th scope="col">Editar</th>
@@ -44,16 +44,16 @@
                         {
                             <a asp-action="AtivarPresencas"
                                asp-route-id="@item.Id"
-                               class="btn btn-danger"
+                               class="btn btn-success"
                                aria-label="Ativar presenças para a turma @item.Nome">
-                                Ativar Presenças
+								Ativar Presenças
                             </a>
                         }
                         else
                         {
                             <a asp-action="AtivarPresencas"
                                asp-route-id="@item.Id"
-                               class="btn btn-success"
+                               class="btn btn-danger"
                                aria-label="Desativar presenças para a turma @item.Nome">
                                 Desativar Presenças
                             </a>

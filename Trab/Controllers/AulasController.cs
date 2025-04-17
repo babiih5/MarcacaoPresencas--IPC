@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -201,6 +202,68 @@ namespace Trab.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+
+        //Ativar Presenças
+        [Authorize(Roles = "Professor")]
+        public async Task<IActionResult> AtivarPresencas(int? id)
+        {
+
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            //Mudar o atributo PresencasAtivas para true
+            var turma = await _context.Turmas.FindAsync(id);
+
+            if (turma == null)
+            {
+                return NotFound();
+            }
+
+            if (turma.PresencasAtivas == true)
+            {
+
+                turma.PresencasAtivas = false;
+                _context.Update(turma);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                turma.PresencasAtivas = true;
+                _context.Update(turma);
+                await _context.SaveChangesAsync();
+
+                //Guardar todos os alunos da turma na tabela presencas através da tabela AlunosTurma com o estado de falta
+                var today = DateTime.Now.Date; 
+                var AlunosGuardados = await _context.Presencas
+                    .Where(p => p.IdTurma == turma.Id && p.Data.Date == today)
+                    .AnyAsync();
+
+                if (!AlunosGuardados)
+                {
+                    var alunos = await _context.AlunoTurmas.Where(at => at.IdTurma == turma.Id).ToListAsync();
+                    foreach (var aluno in alunos)
+                    {
+                        Presenca presenca = new Presenca
+                        {
+                            IdAluno = aluno.IdAluno,
+                            IdTurma = turma.Id,
+                            Data = DateTime.Now,
+                            Estado = false
+                        };
+                        _context.Add(presenca);
+                    }
+                    await _context.SaveChangesAsync();
+                }
+
+                return RedirectToAction(nameof(Index));
+            }
+
+        }
+
 
         private bool AulaExists(int id)
         {
