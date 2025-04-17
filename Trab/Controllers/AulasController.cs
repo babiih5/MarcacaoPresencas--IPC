@@ -30,7 +30,7 @@ namespace Trab.Controllers
             var applicationDbContext = _context.Aulas.Include(a => a.Turma).AsQueryable();
 
 
-            // Filter by professor
+            // Filtrar aulas por professor
             if (professorId.HasValue)
             {
                 applicationDbContext = applicationDbContext.Where(a => a.Turma.IdProf == professorId.Value);

@@ -53,30 +53,43 @@
                     <th scope="col">Início</th>
                     <th scope="col">Fim</th>
                     <th scope="col">Presenças</th>
+                    <th scope="col">Ver Presenças</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in Model)
                 {
-                    <tr>
+                    <tr data-turma-id="@item.Turma?.Id">
                         <td>@item.Turma?.Cadeira</td>
                         <td>@item.Turma?.Nome</td>
                         <td>@item.DataAula.ToString("dd/MM/yyyy")</td>
                         <td>@item.Turma?.HorarioInicio?.ToString(@"hh\:mm")</td>
                         <td>@item.Turma?.HorasFim?.ToString(@"hh\:mm")</td>
-                        <td>
-                            <a asp-action="AbrirPresencas" asp-route-id="@item.Id" class="btn btn-danger" aria-label="Abrir presenças para a aula de @item.Turma?.Cadeira">
-                                Abrir Presenças
-                            </a>
+                        <td class="presencas-btn-container">
+                            @if (item.Turma?.PresencasAtivas == false)
+                            {
+                                <button type="button"
+                                        class="btn btn-danger toggle-presencas"
+                                        data-turma-id="@item.Turma?.Id"
+                                        data-status="false"
+                                        aria-label="Ativar presenças para a aula de @item.Turma?.Cadeira">
+                                    Ativar Presenças
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="button"
+                                        class="btn btn-success toggle-presencas"
+                                        data-turma-id="@item.Turma?.Id"
+                                        data-status="true"
+                                        aria-label="Desativar presenças para a aula de @item.Turma?.Cadeira">
+                                    Desativar Presenças
+                                </button>
+                            }
                         </td>
                         <td>
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary" aria-label="Editar aula de @item.Turma?.Cadeira">
-                                Editar
-                            </a>
-                        </td>
-                        <td>
-                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary" aria-label="Ver detalhes da aula de @item.Turma?.Cadeira">
-                                Detalhes
+                            <a asp-controller="Presencas" asp-action="Index" class="btn btn-danger" aria-label="Ver presenças da aula de @item.Turma?.Cadeira">
+                                Ver Presenças
                             </a>
                         </td>
                     </tr>
@@ -85,3 +98,58 @@
         </table>
     </div>
 </main>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Attach event handler using event delegation
+            // This way it will work even for dynamically added elements
+            $(document).on('click', '.toggle-presencas', function() {
+                const btn = $(this);
+                const turmaId = btn.data('turma-id');
+                const currentStatus = btn.data('status') === 'true';
+                const container = btn.parent();
+
+                // Show loading state
+                btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processando...');
+
+                $.ajax({
+                    url: '@Url.Action("AtivarPresencas", "Turmas")/' + turmaId,
+                    type: 'GET',
+                    success: function() {
+                        // Update button appearance based on new status (opposite of current)
+                        if (currentStatus) {
+                            // Was active, now inactive
+                            container.html(`
+                                <button type="button"
+                                   class="btn btn-danger toggle-presencas"
+                                   data-turma-id="${turmaId}"
+                                   data-status="false"
+                                   aria-label="Ativar presenças">
+                                    Ativar Presenças
+                                </button>
+                            `);
+                        } else {
+                            // Was inactive, now active
+                            container.html(`
+                                <button type="button"
+                                   class="btn btn-success toggle-presencas"
+                                   data-turma-id="${turmaId}"
+                                   data-status="true"
+                                   aria-label="Desativar presenças">
+                                    Desativar Presenças
+                                </button>
+                            `);
+                        }
+                    },
+                    error: function(error) {
+                        console.error('Error:', error);
+                        alert('Ocorreu um erro ao processar o pedido. Por favor, tente novamente.');
+                        btn.prop('disabled', false).text(currentStatus ? 'Desativar Presenças' : 'Ativar Presenças');
+                    }
+                });
+            });
+        });
+    </script>
+}
+

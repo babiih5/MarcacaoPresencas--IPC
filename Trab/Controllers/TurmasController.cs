@@ -207,17 +207,30 @@ namespace Trab.Controllers
                 await _context.SaveChangesAsync();
 
                 //Guardar todos os alunos da turma na tabela presencas através da tabela AlunosTurma com o estado de falta
-                var alunos = _context.AlunoTurmas.Where(at => at.IdTurma == turma.Id).ToList();
-                foreach (var aluno in alunos)
+                //Guardar todos os alunos da turma na tabela presencas através da tabela AlunosTurma com o estado de falta
+                var today = DateTime.Now.Date; // Get just the date part without time
+                var AlunosGuardados = await _context.Presencas
+                    .Where(p => p.IdTurma == turma.Id && p.Data.Date == today)
+                    .AnyAsync();
+
+                // Only add new records if there are no existing records for this turma today
+                if (!AlunosGuardados)
                 {
-                    Presenca presenca = new Presenca();
-                    presenca.IdAluno = aluno.IdAluno;
-                    presenca.IdTurma = turma.Id;
-                    presenca.Data = DateTime.Now;
-                    presenca.Estado = false;
-                    _context.Add(presenca);
+                    var alunos = await _context.AlunoTurmas.Where(at => at.IdTurma == turma.Id).ToListAsync();
+                    foreach (var aluno in alunos)
+                    {
+                        Presenca presenca = new Presenca
+                        {
+                            IdAluno = aluno.IdAluno,
+                            IdTurma = turma.Id,
+                            Data = DateTime.Now,
+                            Estado = false
+                        };
+                        _context.Add(presenca);
+                    }
                     await _context.SaveChangesAsync();
                 }
+
                 return RedirectToAction(nameof(Index));
             }
                 

@@ -1,0 +1,51 @@
+﻿@model IEnumerable<Trab.Models.Presenca>
+
+@{
+    ViewData["Title"] = "Presenças";
+
+    // Get the first presence record to extract common info (assuming all records are from the same class/date)
+    var firstPresenca = Model.FirstOrDefault();
+    var cadeira = firstPresenca?.Turma?.Cadeira ?? "N/A";
+    var turma = firstPresenca?.Turma?.Nome ?? "N/A";
+    var data = firstPresenca?.Data.ToString("dd/MM/yyyy") ?? "N/A";
+}
+
+<main role="main" class="container my-4" aria-labelledby="page-title">
+    <h1 id="page-title" class="display-4 mb-4">Presenças @cadeira - @turma <span class="text-muted fs-5">→ @data</span></h1>
+
+   
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle text-center" aria-describedby="descricao-presencas">
+            <caption id="descricao-presencas" class="visually-hidden">
+                Tabela com a lista de presenças dos alunos, mostra nome, número e estado de presença.
+            </caption>
+            <thead>
+                <tr>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Número</th>
+                    <th scope="col">Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Aluno?.Nome</td>
+                        <td>@item.Aluno?.Al</td>
+                        <td>
+                            @if (item.Estado)
+                            {
+                                <span class="badge bg-success">Presente</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Falta</span>
+                            }
+                        </td>
+                       
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</main>
