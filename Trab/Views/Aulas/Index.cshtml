@@ -4,6 +4,7 @@
     ViewData["Title"] = "Aulas";
     var cadeiras = ViewBag.Cadeiras as List<string> ?? new();
     var turmas = ViewBag.Turmas as List<string> ?? new();
+	var datahoje = DateOnly.FromDateTime(DateTime.Now);
 }
 
 <main role="main" class="container my-4" aria-labelledby="page-title">
@@ -37,15 +38,16 @@
         </div>
 
         <button type="submit" class="btn btn-outline-dark" aria-label="Aplicar Filtros">Filtrar</button>
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary" aria-label="Limpar Filtros">Limpar Filtros</a>
     </form>
 
     <!-- Tabela -->
-    <div class="table-responsive">
+    <div class="table-responsive" style="max-height: calc(100vh - 250px); overflow-y: auto; margin-bottom: 20px;">
         <table class="table table-bordered table-striped align-middle text-center" aria-describedby="descricao-aulas">
             <caption id="descricao-aulas" class="visually-hidden">
                 Tabela com a lista de aulas, incluindo cadeira, turma, data, horário e opções.
             </caption>
-            <thead>
+            <thead class="sticky-top bg-white">
                 <tr>
                     <th scope="col">Cadeira</th>
                     <th scope="col">Turma</th>
@@ -66,28 +68,41 @@
                         <td>@item.Turma?.HorarioInicio?.ToString(@"hh\:mm")</td>
                         <td>@item.Turma?.HorasFim?.ToString(@"hh\:mm")</td>
 
-                        @if(item.Turma?.PresencasAtivas == false)
+                        @if (item.DataAula < datahoje)
                         {
                             <td>
-                                <a asp-action="AtivarPresencas" asp-route-id="@item.Turma?.Id" class="btn btn-danger" aria-label="Ativar presenças para a aula de @item.Turma?.Cadeira">
-                                    Ativar Presenças
-                                </a>
+                                <span class="p-2 bg-secondary text-white rounded" aria-label="Presenças já encerradas para a aula de @item.Turma?.Cadeira">
+                                    Presenças Encerradas
+                                </span>
                             </td>
                         }
-						else
-						{
-                            <td>
-                                <a asp-action="AtivarPresencas" asp-route-id="@item.Turma?.Id" class="btn btn-danger" aria-label="Desativar presenças para a aula de @item.Turma?.Cadeira">
-                                    Desativar Presenças
-                                </a>
-                            </td>
-						}
-                        
+                        else
+                        {
+                            @if (item.Turma?.PresencasAtivas == false)
+                            {
+                                <td>
+                                    <a asp-action="AtivarPresencas" asp-route-id="@item.Turma?.Id" class="btn btn-success" aria-label="Ativar presenças para a aula de @item.Turma?.Cadeira">
+                                        Ativar Presenças
+                                    </a>
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+                                    <a asp-action="AtivarPresencas" asp-route-id="@item.Turma?.Id" class="btn btn-danger" aria-label="Desativar presenças para a aula de @item.Turma?.Cadeira">
+                                        Desativar Presenças
+                                    </a>
+                                </td>
+                            }
+                        }
+
                         <td>
-                            <a asp-controller="Presencas" asp-action="Index" class="btn btn-danger" aria-label="Ver presenças da aula de @item.Turma?.Cadeira">
+                            <a asp-controller="Presencas" asp-action="Index" asp-route-aulaId="@item.Id" class="btn btn-danger">
                                 Ver Presenças
                             </a>
+
                         </td>
+                        
                     </tr>
                 }
             </tbody>

@@ -81,6 +81,42 @@ namespace Trab.Controllers
 
                 _context.Add(turma);
                 await _context.SaveChangesAsync();
+
+
+                //Criar aulas na tabela Aulas no dia da semana correspondente até uma certa data (ex: 06/06/2025)
+                DateOnly dataInicio = DateOnly.FromDateTime(DateTime.Now);
+                DateOnly dataFim = new DateOnly(2025, 6, 6);
+                DateOnly dataAtual = dataInicio;
+
+                var dayMapping = new Dictionary<int, string>
+                {
+                    { 1, "Segunda" },
+                    { 2, "Terça" },
+                    { 3, "Quarta" },
+                    { 4, "Quinta" },
+                    { 5, "Sexta" }
+                };
+
+                while (dataAtual <= dataFim)
+                {
+                    
+                    //Criar aula para o dia da semana correspondente
+                    if (dayMapping.FirstOrDefault(x => x.Value == turma.DiaSemana).Key == (int)dataAtual.DayOfWeek)
+                    {
+                        Aula aula = new Aula
+                        {
+                            TurmaId = turma.Id,
+                            DataAula = dataAtual,
+                            
+                        };
+                        _context.Aulas.Add(aula);
+                    }
+
+                    dataAtual = dataAtual.AddDays(1);
+              
+                }
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
             ViewData["IdProf"] = new SelectList(_context.Professores, "Id", "Email", turma.IdProf);

@@ -37,14 +37,18 @@ namespace Trab.Controllers
                 applicationDbContext = applicationDbContext.Where(a => a.Turma.IdProf == professorId.Value);
             }
 
+            bool filtersApplied = false;
+
             if (!string.IsNullOrEmpty(cadeira))
             {
                 applicationDbContext = applicationDbContext.Where(a => a.Turma.Cadeira == cadeira);
+                filtersApplied = true;
             }
                
             if (!string.IsNullOrEmpty(turma))
             {
                 applicationDbContext = applicationDbContext.Where(a => a.Turma.Nome == turma);
+                filtersApplied = true;
             }
 
 
@@ -52,6 +56,26 @@ namespace Trab.Controllers
             {
                 var dataOnly = DateOnly.FromDateTime(data.Value);
                 applicationDbContext = applicationDbContext.Where(a => a.DataAula == dataOnly);
+            }
+            else
+            {
+                // Sorting logic based on whether filters are applied
+                var today = DateOnly.FromDateTime(DateTime.Today);
+
+                if (filtersApplied)
+                {
+                    // If filtered by Turma or Cadeira: past Aulas first, ordered by date
+                    applicationDbContext = applicationDbContext
+                        .OrderBy(a => a.DataAula >= today) // Past first (true comes before false)
+                        .ThenBy(a => a.DataAula);
+                }
+                else
+                {
+                    // If no filters: today's and future Aulas first, ordered by date
+                    applicationDbContext = applicationDbContext
+                        .OrderBy(a => a.DataAula < today) // Today and future first (false comes before true)
+                        .ThenBy(a => a.DataAula);
+                }
             }
 
             // ViewBag para os filtros - filtrado por professor

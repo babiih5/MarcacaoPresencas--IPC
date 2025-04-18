@@ -20,11 +20,46 @@ namespace Trab.Controllers
         }
 
         // GET: Presencas
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? aulaId)
         {
-            var applicationDbContext = _context.Presencas.Include(p => p.Aluno).Include(p => p.Turma);
-            return View(await applicationDbContext.ToListAsync());
+            if (aulaId == null)
+            {
+                // If no specific aula is provided, show the default view with all presences
+                var allPresencas = _context.Presencas.Include(p => p.Aluno).Include(p => p.Turma);
+                return View(await allPresencas.ToListAsync());
+            }
+
+            // Get the specific aula by ID
+            var aula = await _context.Aulas
+                .Include(a => a.Turma)
+                .FirstOrDefaultAsync(a => a.Id == aulaId);
+
+            if (aula == null)
+            {
+                return NotFound();
+            }
+
+            // Convert DateOnly to DateTime for comparison (since Presenca.Data is DateTime)
+            var aulaDate = aula.DataAula.ToDateTime(TimeOnly.MinValue);
+
+            // Filter presences by turma ID and the date of the aula
+            var filteredPresencas = await _context.Presencas
+                .Include(p => p.Aluno)
+                .Include(p => p.Turma)
+                .Where(p => p.IdTurma == aula.TurmaId && p.Data.Date == aulaDate.Date)
+                .ToListAsync();
+
+            // Pass the aula information to the view
+            ViewData["AulaCadeira"] = aula.Turma?.Cadeira;
+            ViewData["AulaTurma"] = aula.Turma?.Nome;
+            ViewData["AulaData"] = aula.DataAula.ToString("dd/MM/yyyy");
+            ViewData["AulaId"] = aulaId; // Pass the aula ID for reference
+
+            return View(filteredPresencas);
         }
+
+
+
 
         // GET: Presencas/Details/5
         public async Task<IActionResult> Details(int? id)
