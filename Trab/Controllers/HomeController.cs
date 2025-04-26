@@ -19,9 +19,7 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-
         //Ir buscar as aulas do dia de hoje
-
         if (User.Identity.IsAuthenticated && User.IsInRole("Professor"))
         {
             var today = DateOnly.FromDateTime(DateTime.Today);
@@ -39,7 +37,6 @@ public class HomeController : Controller
             }
         }
 
-
         //Verificar se o usuário logado é um aluno
         if (!User.Identity.IsAuthenticated || !User.IsInRole("Aluno"))
         {
@@ -55,21 +52,23 @@ public class HomeController : Controller
         //Descobrir na tabela "AlunoTurma" as turmas do aluno logado e qual delas tem o PresençasAtivas = true
         var turmas = _context.AlunoTurmas.Where(at => at.IdAluno == alunoId).Include(at => at.Turma).ToList();
 
-        var turmaAtiva = turmas.FirstOrDefault(t => t.Turma.PresencasAtivas);
-
-        //Levar os estado da presença do aluno logado para a View caso seja true
-        var presencas = _context.Presencas
-            .Where(p => p.IdAluno == alunoId && p.IdTurma == turmaAtiva.Turma.Id).ToList();
-
-        
-        var presente = presencas.FirstOrDefault(p => p.Estado == true);
-
+        var turmaAtiva = turmas.FirstOrDefault(t => t.Turma?.PresencasAtivas == true);
 
         if (turmaAtiva != null)
         {
+            //Levar os estado da presença do aluno logado para a View caso seja true
+            var presencas = _context.Presencas
+                .Where(p => p.IdAluno == alunoId && p.IdTurma == turmaAtiva.Turma.Id).ToList();
+
+            var presente = presencas.FirstOrDefault(p => p.Estado == true);
+
             ViewData["Cadeira"] = turmaAtiva.Turma.Cadeira;
             ViewData["Turma"] = turmaAtiva.Turma.Nome;
             ViewData["Presente"] = presente;
+        }
+        else
+        {
+            ViewData["MensagemSemAula"] = "Não há aulas com presenças ativas de momento.";
         }
 
         return View();

@@ -1,37 +1,110 @@
 ﻿@model IEnumerable<Trab.Models.AlunoTurma>
 
 @{
+    Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Alunos de " + ViewBag.CadeiraNome + " - " + ViewBag.TurmaNome;
 }
 
-<h1>Alunos da @ViewBag.CadeiraNome - @ViewBag.TurmaNome</h1>
+<main role="main" class="container px-3" aria-labelledby="alunosTurmaTitle">
+    <h1 id="alunosTurmaTitle" class="my-3 fs-3 fs-md-1">Alunos da @ViewBag.CadeiraNome - @ViewBag.TurmaNome</h1>
 
-<p>
-    <a asp-action="Create" asp-route-idTurma="@ViewBag.IdTurma">Adicionar Aluno à Turma</a>
-</p>
+    <div class="mb-3">
+        <a asp-action="Create"
+           asp-route-idTurma="@ViewBag.IdTurma"
+           class="btn btn-red w-100 w-md-auto mb-3"
+           aria-label="Adicionar novo aluno à turma @ViewBag.TurmaNome">
+            Adicionar Aluno à Turma
+        </a>
+    </div>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Turma</th>
-            <th>Aluno</th>
-            <th>Número Mecanográfico</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
+    <!-- Versão desktop da tabela -->
+    <div class="table-responsive d-none d-md-block">
+        <table class="table table-striped" role="table" aria-describedby="alunosTurmaTableCaption">
+            <caption id="alunosTurmaTableCaption">
+                Tabela com a lista de alunos inscritos na turma @ViewBag.TurmaNome da cadeira @ViewBag.CadeiraNome.
+            </caption>
+            <thead>
+                <tr>
+                    <th scope="col">Turma</th>
+                    <th scope="col">Aluno</th>
+                    <th scope="col">Número Mecanográfico</th>
+                    <th scope="col">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Turma.Nome</td>
+                        <td>@item.Aluno.Nome</td>
+                        <td>@item.Aluno.Al</td>
+                        <td>
+                            <a asp-action="Details"
+                               asp-route-id="@item.Id"
+                               class="btn btn-primary me-1"
+                               aria-label="Ver detalhes da inscrição do aluno @item.Aluno.Nome">
+                                Detalhes
+                            </a>
+                            <a asp-action="Delete"
+                               asp-route-id="@item.Id"
+                               class="btn btn-red"
+                               aria-label="Excluir inscrição do aluno @item.Aluno.Nome">
+                                Excluir
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Versão mobile com cards -->
+    <div class="d-md-none">
+        @if (Model != null && Model.Any())
         {
-            <tr>
-                <td>@item.Turma.Nome</td>
-                <td>@item.Aluno.Nome</td>
-                <td>@item.Aluno.Al</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Editar</a>
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Detalhes</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Excluir</a>
-                </td>
-            </tr>
+            @foreach (var item in Model)
+            {
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="card-title mb-0">@item.Aluno.Nome</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-2"><strong>Turma:</strong> @item.Turma.Nome</p>
+                        <p class="mb-3"><strong>Número:</strong> @item.Aluno.Al</p>
+
+                        <div class="d-flex gap-2">
+                            <a asp-action="Details"
+                               asp-route-id="@item.Id"
+                               class="btn btn-primary flex-grow-1"
+                               aria-label="Ver detalhes da inscrição do aluno @item.Aluno.Nome">
+                                Detalhes
+                            </a>
+                            <a asp-action="Delete"
+                               asp-route-id="@item.Id"
+                               class="btn btn-red flex-grow-1"
+                               aria-label="Excluir inscrição do aluno @item.Aluno.Nome">
+                                Excluir
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
         }
-    </tbody>
-</table>
+        else
+        {
+            <div class="alert alert-info">
+                <p class="mb-0">Não há alunos inscritos nesta turma.</p>
+            </div>
+        }
+    </div>
+
+    <div class="mt-4">
+        <a asp-controller="Turmas"
+           asp-action="Index"
+           class="btn btn-secondary w-100 w-md-auto"
+           aria-label="Voltar para a lista de turmas">
+            Voltar para Turmas
+        </a>
+    </div>
+</main>
+

@@ -5,79 +5,137 @@
     ViewData["Title"] = "Turmas";
 }
 
-<main role="main" class="container" aria-labelledby="turmasTitle">
-    <h1 id="turmasTitle">Turmas</h1>
+<main role="main" class="container px-2" aria-labelledby="turmasTitle">
+    <h1 id="turmasTitle" class="my-3 fs-2 fs-md-1">Turmas</h1>
 
     <!-- Botão para adicionar nova cadeira com atributo aria-label descritivo -->
     <p>
-        <a asp-action="Create" class="btn btn-red" aria-label="Adicionar nova cadeira">
+        <a asp-action="Create" class="btn btn-red mb-3 w-100 w-md-auto" aria-label="Adicionar nova cadeira">
             Adicionar Cadeira
         </a>
     </p>
 
-    <!-- Tabela com caption, roles e atributos scope para cabeçalhos -->
-    <table class="table turmas-table" role="table" aria-describedby="turmasTableCaption">
-        <caption id="turmasTableCaption">
-            Tabela com as informações das turmas, incluindo a cadeira, turma, presenças e opções para editar e ver alunos.
-        </caption>
-        <thead>
-            <tr>
-                <th scope="col">Nome_Cadeira</th>
-                <th scope="col">Turma</th>
-                <th scope="col">Presenças</th>
-                <th scope="col">Editar</th>
-                <th scope="col">Ver Alunos</th>
-            </tr>
-        </thead>
-        <tbody>
+    <!-- Versão para desktop -->
+    <div class="table-responsive d-none d-md-block">
+        <table class="table turmas-table" role="table" aria-describedby="turmasTableCaption">
+            <caption id="turmasTableCaption">
+                Tabela com as informações das turmas, incluindo a cadeira, turma, presenças e opções para editar e ver alunos.
+            </caption>
+            <thead>
+                <tr>
+                    <th scope="col">Nome_Cadeira</th>
+                    <th scope="col">Turma</th>
+                    <th scope="col">Presenças</th>
+                    <th scope="col">Editar</th>
+                    <th scope="col">Ver Alunos</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Cadeira)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Nome)
+                        </td>
+                        <td>
+                            @if (!item.PresencasAtivas)
+                            {
+                                <a asp-action="AtivarPresencas"
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-success"
+                                   aria-label="Ativar presenças para a turma @item.Nome">
+                                    Ativar Presenças
+                                </a>
+                            }
+                            else
+                            {
+                                <a asp-action="AtivarPresencas"
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-danger"
+                                   aria-label="Desativar presenças para a turma @item.Nome">
+                                    Desativar Presenças
+                                </a>
+                            }
+                        </td>
+                        <td>
+                            <a asp-action="Edit"
+                               asp-route-id="@item.Id"
+                               class="btn btn-primary"
+                               aria-label="Editar turma @item.Nome">
+                                Editar
+                            </a>
+                        </td>
+                        <td>
+                            <a asp-controller="AlunosTurma"
+                               asp-action="Index"
+                               asp-route-id="@item.Id"
+                               class="btn btn-primary"
+                               aria-label="Ver alunos da turma @item.Nome">
+                                Ver Alunos
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Versão para mobile (cards) -->
+    <div class="d-md-none">
+        @if (Model != null && Model.Any())
+        {
             @foreach (var item in Model)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Cadeira)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Nome)
-                    </td>
-                    <td>
-                        @if (!item.PresencasAtivas)
-                        {
-                            <a asp-action="AtivarPresencas"
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">@item.Cadeira - @item.Nome</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex flex-column gap-2">
+                            @if (!item.PresencasAtivas)
+                            {
+                                <a asp-action="AtivarPresencas"
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-success w-100"
+                                   aria-label="Ativar presenças para a turma @item.Nome">
+                                    Ativar Presenças
+                                </a>
+                            }
+                            else
+                            {
+                                <a asp-action="AtivarPresencas"
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-danger w-100"
+                                   aria-label="Desativar presenças para a turma @item.Nome">
+                                    Desativar Presenças
+                                </a>
+                            }
+                            <a asp-action="Edit"
                                asp-route-id="@item.Id"
-                               class="btn btn-success"
-                               aria-label="Ativar presenças para a turma @item.Nome">
-								Ativar Presenças
+                               class="btn btn-primary w-100"
+                               aria-label="Editar turma @item.Nome">
+                                Editar
                             </a>
-                        }
-                        else
-                        {
-                            <a asp-action="AtivarPresencas"
+                            <a asp-controller="AlunosTurma"
+                               asp-action="Index"
                                asp-route-id="@item.Id"
-                               class="btn btn-danger"
-                               aria-label="Desativar presenças para a turma @item.Nome">
-                                Desativar Presenças
+                               class="btn btn-primary w-100"
+                               aria-label="Ver alunos da turma @item.Nome">
+                                Ver Alunos
                             </a>
-                        }
-                    </td>
-                    <td>
-                        <a asp-action="Edit"
-                           asp-route-id="@item.Id"
-                           class="btn btn-primary"
-                           aria-label="Editar turma @item.Nome">
-                            Editar
-                        </a>
-                    </td>
-                    <td>
-                        <a asp-controller="AlunosTurma"
-                           asp-action="Index"
-                           asp-route-id="@item.Id"
-                           class="btn btn-primary"
-                           aria-label="Ver alunos da turma @item.Nome">
-                            Ver Alunos
-                        </a>
-                    </td>
-                </tr>
+                        </div>
+                    </div>
+                </div>
             }
-        </tbody>
-    </table>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                <p>Não há turmas Registadas.</p>
+            </div>
+        }
+    </div>
 </main>

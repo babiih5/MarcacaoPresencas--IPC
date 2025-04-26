@@ -59,13 +59,21 @@ namespace Trab.Controllers
                 .Include(a => a.Aluno)
                 .Include(a => a.Turma)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (alunoTurma == null)
             {
                 return NotFound();
             }
 
-            return View(alunoTurma);
+            // Store the turma ID in ViewBag for the "Back" button
+            ViewBag.IdTurma = alunoTurma.IdTurma;
+            ViewBag.TurmaNome = alunoTurma.Turma?.Nome;
+            ViewBag.CadeiraNome = alunoTurma.Turma?.Cadeira;
+
+            // Pass the Aluno object to the view instead of AlunoTurma
+            return View(alunoTurma.Aluno);
         }
+
 
 
         // GET: AlunosTurma/Create

@@ -1,51 +1,58 @@
 ﻿@model IEnumerable<Trab.Models.Aula>
 
 @{
+    Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Aulas";
     var cadeiras = ViewBag.Cadeiras as List<string> ?? new();
     var turmas = ViewBag.Turmas as List<string> ?? new();
-	var datahoje = DateOnly.FromDateTime(DateTime.Now);
+    var datahoje = DateOnly.FromDateTime(DateTime.Now);
 }
 
-<main role="main" class="container my-4" aria-labelledby="page-title">
-    <h1 id="page-title" class="display-4 mb-4">Aulas</h1>
+<main role="main" class="container px-3" aria-labelledby="aulasTitle">
+    <h1 id="aulasTitle" class="my-3 fs-2 fs-md-1">Aulas</h1>
 
     <!-- Filtros -->
-    <form method="get" class="mb-4 d-flex flex-wrap gap-2" role="search" aria-label="Filtros de Aulas">
-        <select name="cadeira" class="btn btn-danger" aria-label="Filtrar por Cadeira">
-            <option value="">Cadeira</option>
-            @foreach (var c in cadeiras)
-            {
-                <option value="@c">@c</option>
-            }
-        </select>
+    <div class="mb-4">
+        <form method="get" class="d-flex flex-wrap gap-2" role="search" aria-label="Filtros de Aulas">
+            <div class="w-100 w-md-auto mb-2 mb-md-0">
+                <select name="cadeira" class="form-select" aria-label="Filtrar por Cadeira">
+                    <option value="">Cadeira</option>
+                    @foreach (var c in cadeiras)
+                    {
+                        <option value="@c">@c</option>
+                    }
+                </select>
+            </div>
 
-        <select name="turma" class="btn btn-danger" aria-label="Filtrar por Turma">
-            <option value="">Turmas</option>
-            @foreach (var t in turmas)
-            {
-                <option value="@t">@t</option>
-            }
-        </select>
+            <div class="w-100 w-md-auto mb-2 mb-md-0">
+                <select name="turma" class="form-select" aria-label="Filtrar por Turma">
+                    <option value="">Turmas</option>
+                    @foreach (var t in turmas)
+                    {
+                        <option value="@t">@t</option>
+                    }
+                </select>
+            </div>
 
-        <div class="dropdown">
-            <button class="btn btn-danger dropdown-toggle" type="button" id="dropdownData" data-bs-toggle="dropdown" aria-expanded="false">
-                Datas
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownData">
-                <li><input type="date" name="data" class="dropdown-item" aria-label="Selecionar Data" /></li>
-            </ul>
-        </div>
+            <div class="w-100 w-md-auto mb-2 mb-md-0">
+                <div class="input-group">
+                    <span class="input-group-text">Data</span>
+                    <input type="date" name="data" class="form-control" aria-label="Selecionar Data" />
+                </div>
+            </div>
 
-        <button type="submit" class="btn btn-outline-dark" aria-label="Aplicar Filtros">Filtrar</button>
-        <a href="@Url.Action("Index")" class="btn btn-outline-secondary" aria-label="Limpar Filtros">Limpar Filtros</a>
-    </form>
+            <div class="w-100 d-flex gap-2 mt-2 mt-md-0">
+                <button type="submit" class="btn btn-primary flex-grow-1 flex-md-grow-0" aria-label="Aplicar Filtros">Filtrar</button>
+                <a href="@Url.Action("Index")" class="btn btn-secondary flex-grow-1 flex-md-grow-0" aria-label="Limpar Filtros">Limpar Filtros</a>
+            </div>
+        </form>
+    </div>
 
-    <!-- Tabela -->
-    <div class="table-responsive" style="max-height: calc(100vh - 250px); overflow-y: auto; margin-bottom: 20px;">
-        <table class="table table-bordered table-striped align-middle text-center" aria-describedby="descricao-aulas">
-            <caption id="descricao-aulas" class="visually-hidden">
-                Tabela com a lista de aulas, incluindo cadeira, turma, data, horário e opções.
+    <!-- Tabela para desktop -->
+    <div class="table-responsive d-none d-md-block" style="max-height: calc(100vh - 350px); overflow-y: auto; margin-bottom: 20px;">
+        <table class="table table-striped" role="table" aria-describedby="aulasTableCaption">
+            <caption id="aulasTableCaption">
+                Tabela com a lista de aulas, incluindo cadeira, turma, data, horário e opções para gerenciar presenças.
             </caption>
             <thead class="sticky-top bg-white">
                 <tr>
@@ -71,7 +78,8 @@
                         @if (item.DataAula < datahoje)
                         {
                             <td>
-                                <span class="p-2 bg-secondary text-white rounded" aria-label="Presenças já encerradas para a aula de @item.Turma?.Cadeira">
+                                <span class="badge bg-secondary text-white"
+                                      aria-label="Presenças já encerradas para a aula de @item.Turma?.Cadeira">
                                     Presenças Encerradas
                                 </span>
                             </td>
@@ -81,7 +89,10 @@
                             @if (item.Turma?.PresencasAtivas == false)
                             {
                                 <td>
-                                    <a asp-action="AtivarPresencas" asp-route-id="@item.Turma?.Id" class="btn btn-success" aria-label="Ativar presenças para a aula de @item.Turma?.Cadeira">
+                                    <a asp-action="AtivarPresencas"
+                                       asp-route-id="@item.Turma?.Id"
+                                       class="btn btn-success"
+                                       aria-label="Ativar presenças para a aula de @item.Turma?.Cadeira em @item.DataAula.ToString("dd/MM/yyyy")">
                                         Ativar Presenças
                                     </a>
                                 </td>
@@ -89,7 +100,10 @@
                             else
                             {
                                 <td>
-                                    <a asp-action="AtivarPresencas" asp-route-id="@item.Turma?.Id" class="btn btn-danger" aria-label="Desativar presenças para a aula de @item.Turma?.Cadeira">
+                                    <a asp-action="AtivarPresencas"
+                                       asp-route-id="@item.Turma?.Id"
+                                       class="btn btn-danger"
+                                       aria-label="Desativar presenças para a aula de @item.Turma?.Cadeira em @item.DataAula.ToString("dd/MM/yyyy")">
                                         Desativar Presenças
                                     </a>
                                 </td>
@@ -97,15 +111,85 @@
                         }
 
                         <td>
-                            <a asp-controller="Presencas" asp-action="Index" asp-route-aulaId="@item.Id" class="btn btn-danger">
+                            <a asp-controller="Presencas"
+                               asp-action="Index"
+                               asp-route-aulaId="@item.Id"
+                               class="btn btn-red"
+                               aria-label="Ver presenças da aula de @item.Turma?.Cadeira em @item.DataAula.ToString("dd/MM/yyyy")">
                                 Ver Presenças
                             </a>
-
                         </td>
-                        
                     </tr>
                 }
             </tbody>
         </table>
+    </div>
+
+    <!-- Layout de cards para mobile -->
+    <div class="d-md-none">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var item in Model)
+            {
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="card-title mb-0">@item.Turma?.Cadeira - @item.Turma?.Nome</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <div><strong>Data:</strong> @item.DataAula.ToString("dd/MM/yyyy")</div>
+                            <div><strong>Horário:</strong> @item.Turma?.HorarioInicio?.ToString(@"hh\:mm") - @item.Turma?.HorasFim?.ToString(@"hh\:mm")</div>
+                        </div>
+
+                        <div class="d-flex flex-column gap-2 mt-3">
+                            @if (item.DataAula < datahoje)
+                            {
+                                <div class="text-center py-2">
+                                    <span class="badge bg-secondary text-white p-2"
+                                          aria-label="Presenças já encerradas para a aula de @item.Turma?.Cadeira">
+                                        Presenças Encerradas
+                                    </span>
+                                </div>
+                            }
+                            else
+                            {
+                                @if (item.Turma?.PresencasAtivas == false)
+                                {
+                                    <a asp-action="AtivarPresencas"
+                                       asp-route-id="@item.Turma?.Id"
+                                       class="btn btn-success w-100"
+                                       aria-label="Ativar presenças para a aula de @item.Turma?.Cadeira em @item.DataAula.ToString("dd/MM/yyyy")">
+                                        Ativar Presenças
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a asp-action="AtivarPresencas"
+                                       asp-route-id="@item.Turma?.Id"
+                                       class="btn btn-danger w-100"
+                                       aria-label="Desativar presenças para a aula de @item.Turma?.Cadeira em @item.DataAula.ToString("dd/MM/yyyy")">
+                                        Desativar Presenças
+                                    </a>
+                                }
+                            }
+
+                            <a asp-controller="Presencas"
+                               asp-action="Index"
+                               asp-route-aulaId="@item.Id"
+                               class="btn btn-red w-100"
+                               aria-label="Ver presenças da aula de @item.Turma?.Cadeira em @item.DataAula.ToString("dd/MM/yyyy")">
+                                Ver Presenças
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="alert alert-info">
+                <p class="mb-0">Não foram encontradas aulas.</p>
+            </div>
+        }
     </div>
 </main>

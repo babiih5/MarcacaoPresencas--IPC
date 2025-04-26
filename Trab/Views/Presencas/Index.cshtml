@@ -10,18 +10,23 @@
     var aulaId = ViewData["AulaId"] as int?;
 }
 
-<main role="main" class="container my-4" aria-labelledby="page-title">
-    <h1 id="page-title" class="display-4 mb-4">Presenças @cadeira - @turma <span class="text-muted fs-5">→ @data</span></h1>
+<main role="main" class="container my-4 px-3" aria-labelledby="page-title">
+    <h1 id="page-title" class="fs-2 fs-md-4 mb-3">
+        Presenças
+        <span class="d-block d-md-inline">@cadeira - @turma</span>
+        <span class="text-muted fs-6 d-block mt-1 mb-3 mb-md-0">→ @data</span>
+    </h1>
 
     @if (!Model.Any())
     {
         <div class="alert alert-info">
-            <p>Não foram encontradas presenças para esta aula. Por favor abra as Presenças.</p>
+            <p class="mb-0">Não foram encontradas presenças para esta aula. Por favor abra as Presenças.</p>
         </div>
     }
     else
     {
-        <div class="table-responsive">
+        <!-- Versão desktop da tabela (visível apenas em telas médias e maiores) -->
+        <div class="table-responsive d-none d-md-block">
             <table class="table table-bordered table-striped align-middle text-center" aria-describedby="descricao-presencas">
                 <caption id="descricao-presencas" class="visually-hidden">
                     Tabela com a lista de presenças dos alunos, mostra nome, número e estado de presença.
@@ -54,5 +59,36 @@
                 </tbody>
             </table>
         </div>
+
+        <!-- Versão mobile em cards (visível apenas em telas pequenas) -->
+        <div class="d-md-none">
+            @foreach (var item in Model)
+            {
+                <div class="card mb-2 shadow-sm">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="card-title mb-0">@item.Aluno?.Nome</h5>
+                                <p class="text-muted small mb-0">Número: @item.Aluno?.Al</p>
+                            </div>
+                            <div>
+                                @if (item.Estado)
+                                {
+                                    <span class="badge bg-success px-3 py-2">Presente</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger px-3 py-2">Falta</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
     }
+
+    <div class="mt-4">
+        <a href="javascript:history.back()" class="btn btn-secondary w-100 w-md-auto">Voltar</a>
+    </div>
 </main>

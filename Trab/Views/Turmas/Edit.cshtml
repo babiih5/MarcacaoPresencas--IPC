@@ -1,64 +1,95 @@
 ﻿@model Trab.Models.Turma
 
 @{
-    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Editar Turma";
 }
 
-<h1>Edit</h1>
+<main role="main" class="container px-3" aria-labelledby="editarTurmaTitle">
+    <h1 id="editarTurmaTitle" class="my-3 fs-3 fs-md-1">Editar Turma</h1>
 
-<h4>Turma</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Cadeira" class="control-label"></label>
-                <input asp-for="Cadeira" class="form-control" />
-                <span asp-validation-for="Cadeira" class="text-danger"></span>
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body p-3 p-md-4">
+                    <form asp-action="Edit" role="form" aria-labelledby="formTitle">
+                        <fieldset>
+                            <legend id="formTitle" class="sr-only">Formulário para editar turma</legend>
+
+                            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                            <input type="hidden" asp-for="Id" />
+
+                            <div class="form-group mb-3">
+                                <label asp-for="Cadeira" class="form-label">Nome da Cadeira</label>
+                                <input asp-for="Cadeira" class="form-control" aria-required="true" />
+                                <span asp-validation-for="Cadeira" class="text-danger" role="alert"></span>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label asp-for="Nome" class="form-label">Nome da Turma</label>
+                                <input asp-for="Nome" class="form-control" aria-required="true" />
+                                <span asp-validation-for="Nome" class="text-danger" role="alert"></span>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label asp-for="DiaSemana" class="form-label">Dia da Semana</label>
+                                <select asp-for="DiaSemana" class="form-select" aria-required="true">
+                                    <option value="">-- Selecione o dia --</option>
+                                    <option value="Segunda">Segunda-feira</option>
+                                    <option value="Terça">Terça-feira</option>
+                                    <option value="Quarta">Quarta-feira</option>
+                                    <option value="Quinta">Quinta-feira</option>
+                                    <option value="Sexta">Sexta-feira</option>
+                                </select>
+                                <span asp-validation-for="DiaSemana" class="text-danger" role="alert"></span>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-12 col-sm-6 mb-3">
+                                    <label asp-for="HorarioInicio" class="form-label">Horário de Início</label>
+                                    <input asp-for="HorarioInicio" class="form-control" type="time"
+                                           aria-required="true" aria-label="Horário de início da aula" />
+                                    <span asp-validation-for="HorarioInicio" class="text-danger" role="alert"></span>
+                                </div>
+
+                                <div class="col-12 col-sm-6 mb-3">
+                                    <label asp-for="HorasFim" class="form-label">Horário de Fim</label>
+                                    <input asp-for="HorasFim" class="form-control" type="time"
+                                           aria-required="true" aria-label="Horário de término da aula" />
+                                    <span asp-validation-for="HorasFim" class="text-danger" role="alert"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label asp-for="Sala" class="form-label">Sala</label>
+                                <input asp-for="Sala" class="form-control" aria-required="true" />
+                                <span asp-validation-for="Sala" class="text-danger" role="alert"></span>
+                            </div>
+
+                            <div class="form-group mb-4">
+                                <label asp-for="IdProf" class="form-label">Professor</label>
+                                <select asp-for="IdProf" class="form-select" asp-items="ViewBag.IdProf" aria-required="true"></select>
+                                <span asp-validation-for="IdProf" class="text-danger" role="alert"></span>
+                            </div>
+
+                            <div class="form-group mt-4 d-flex flex-column flex-sm-row gap-2">
+                                <button type="submit" class="btn btn-red w-100 w-sm-auto" aria-label="Salvar alterações da turma">
+                                    Salvar Alterações
+                                </button>
+                                <a asp-action="Index" class="btn btn-secondary w-100 w-sm-auto" aria-label="Voltar para a lista de turmas">
+                                    Voltar
+                                </a>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Nome" class="control-label"></label>
-                <input asp-for="Nome" class="form-control" />
-                <span asp-validation-for="Nome" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DiaSemana" class="control-label"></label>
-                <input asp-for="DiaSemana" class="form-control" />
-                <span asp-validation-for="DiaSemana" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="HorarioInicio" class="control-label"></label>
-                <input asp-for="HorarioInicio" class="form-control" />
-                <span asp-validation-for="HorarioInicio" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="HorasFim" class="control-label"></label>
-                <input asp-for="HorasFim" class="form-control" />
-                <span asp-validation-for="HorasFim" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Sala" class="control-label"></label>
-                <input asp-for="Sala" class="form-control" />
-                <span asp-validation-for="Sala" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IdProf" class="control-label"></label>
-                <select asp-for="IdProf" class="form-control" asp-items="ViewBag.IdProf"></select>
-                <span asp-validation-for="IdProf" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+</main>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
