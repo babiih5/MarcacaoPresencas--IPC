@@ -61,7 +61,6 @@
                     <th scope="col">Data</th>
                     <th scope="col">Início</th>
                     <th scope="col">Fim</th>
-                    <th scope="col">Presenças</th>
                     <th scope="col">Ver Presenças</th>
                 </tr>
             </thead>
@@ -75,40 +74,6 @@
                         <td>@item.Turma?.HorarioInicio?.ToString(@"hh\:mm")</td>
                         <td>@item.Turma?.HorasFim?.ToString(@"hh\:mm")</td>
 
-                        @if (item.DataAula < datahoje)
-                        {
-                            <td>
-                                <span class="badge bg-secondary text-white"
-                                      aria-label="Presenças já encerradas para a aula de @item.Turma?.Cadeira">
-                                    Presenças Encerradas
-                                </span>
-                            </td>
-                        }
-                        else
-                        {
-                            @if (item.Turma?.PresencasAtivas == false)
-                            {
-                                <td>
-                                    <a asp-action="AtivarPresencas"
-                                       asp-route-id="@item.Turma?.Id"
-                                       class="btn btn-success"
-                                       aria-label="Ativar presenças para a aula de @item.Turma?.Cadeira em @item.DataAula.ToString("dd/MM/yyyy")">
-                                        Ativar Presenças
-                                    </a>
-                                </td>
-                            }
-                            else
-                            {
-                                <td>
-                                    <a asp-action="AtivarPresencas"
-                                       asp-route-id="@item.Turma?.Id"
-                                       class="btn btn-danger"
-                                       aria-label="Desativar presenças para a aula de @item.Turma?.Cadeira em @item.DataAula.ToString("dd/MM/yyyy")">
-                                        Desativar Presenças
-                                    </a>
-                                </td>
-                            }
-                        }
 
                         <td>
                             <a asp-controller="Presencas"

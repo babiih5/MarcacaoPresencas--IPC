@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Trab.Data;
@@ -73,6 +74,68 @@ public class HomeController : Controller
 
         return View();
     }
+
+
+    //Ativar Presenças
+    [Authorize(Roles = "Professor")]
+    public async Task<IActionResult> AtivarPresencas(int? id)
+    {
+
+        if (id == null)
+        {
+            return NotFound();
+        }
+
+        //Mudar o atributo PresencasAtivas para true
+        var turma = await _context.Turmas.FindAsync(id);
+
+        if (turma == null)
+        {
+            return NotFound();
+        }
+
+        if (turma.PresencasAtivas == true)
+        {
+
+            turma.PresencasAtivas = false;
+            _context.Update(turma);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+        else
+        {
+            turma.PresencasAtivas = true;
+            _context.Update(turma);
+            await _context.SaveChangesAsync();
+
+            //Guardar todos os alunos da turma na tabela presencas através da tabela AlunosTurma com o estado de falta
+            var today = DateTime.Now.Date;
+            var AlunosGuardados = await _context.Presencas
+                .Where(p => p.IdTurma == turma.Id && p.Data.Date == today)
+                .AnyAsync();
+
+            if (!AlunosGuardados)
+            {
+                var alunos = await _context.AlunoTurmas.Where(at => at.IdTurma == turma.Id).ToListAsync();
+                foreach (var aluno in alunos)
+                {
+                    Presenca presenca = new Presenca
+                    {
+                        IdAluno = aluno.IdAluno,
+                        IdTurma = turma.Id,
+                        Data = DateTime.Now,
+                        Estado = false
+                    };
+                    _context.Add(presenca);
+                }
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+    }
+
 
     public IActionResult Privacy()
     {

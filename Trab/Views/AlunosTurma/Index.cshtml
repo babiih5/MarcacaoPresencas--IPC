@@ -45,12 +45,14 @@
                                aria-label="Ver detalhes da inscrição do aluno @item.Aluno.Nome">
                                 Detalhes
                             </a>
-                            <a asp-action="Delete"
+                            <a asp-action="DeleteDirect"
                                asp-route-id="@item.Id"
                                class="btn btn-red"
+                               onclick="return confirm('Tem certeza que deseja excluir este aluno da turma?');"
                                aria-label="Excluir inscrição do aluno @item.Aluno.Nome">
                                 Excluir
                             </a>
+
                         </td>
                     </tr>
                 }
@@ -79,12 +81,14 @@
                                aria-label="Ver detalhes da inscrição do aluno @item.Aluno.Nome">
                                 Detalhes
                             </a>
-                            <a asp-action="Delete"
+                            <a asp-action="DeleteDirect"
                                asp-route-id="@item.Id"
-                               class="btn btn-red flex-grow-1"
+                               class="btn btn-red"
+                               onclick="return confirm('Tem certeza que deseja excluir este aluno da turma?');"
                                aria-label="Excluir inscrição do aluno @item.Aluno.Nome">
                                 Excluir
                             </a>
+
                         </div>
                     </div>
                 </div>

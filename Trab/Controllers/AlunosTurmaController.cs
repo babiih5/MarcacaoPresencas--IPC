@@ -206,40 +206,32 @@ namespace Trab.Controllers
             return View(alunoTurma);
         }
 
-        // GET: AlunosTurma/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+       
+
+        // GET: AlunosTurma/DeleteDirect/5
+        public async Task<IActionResult> DeleteDirect(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var alunoTurma = await _context.AlunoTurmas
-                .Include(a => a.Aluno)
-                .Include(a => a.Turma)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var alunoTurma = await _context.AlunoTurmas.FindAsync(id);
             if (alunoTurma == null)
             {
                 return NotFound();
             }
 
-            return View(alunoTurma);
-        }
+            // Store the turma ID before removing the record
+            int turmaId = alunoTurma.IdTurma;
 
-        // POST: AlunosTurma/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var alunoTurma = await _context.AlunoTurmas.FindAsync(id);
-            if (alunoTurma != null)
-            {
-                _context.AlunoTurmas.Remove(alunoTurma);
-            }
-
+            _context.AlunoTurmas.Remove(alunoTurma);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            // Redirect back to the list of students for this specific turma
+            return RedirectToAction(nameof(Index), new { id = turmaId });
         }
+
 
         private bool AlunoTurmaExists(int id)
         {
