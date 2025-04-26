@@ -1,58 +1,86 @@
 ﻿@model Trab.Models.Turma
 
 @{
-    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Criar Turma";
 }
 
-<h1>Create</h1>
+<main role="main" class="container" aria-labelledby="criarTurmaTitle">
+    <h1 id="criarTurmaTitle">Criar Turma</h1>
 
-<h4>Turma</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Cadeira" class="control-label"></label>
-                <input asp-for="Cadeira" class="form-control" />
-                <span asp-validation-for="Cadeira" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Nome" class="control-label"></label>
-                <input asp-for="Nome" class="form-control" />
-                <span asp-validation-for="Nome" class="text-danger"></span>
-            </div>
-			<div class="form-group">
-				<label asp-for="DiaSemana" class="control-label"></label>
-				<input asp-for="DiaSemana" class="form-control" />
-				<span asp-validation-for="DiaSemana" class="text-danger"></span>
-			</div>
-            <div class="form-group">
-                <label asp-for="HorarioInicio" class="control-label"></label>
-                <input asp-for="HorarioInicio" class="form-control" type="time" name="horarioInicio" />
-                <span asp-validation-for="HorarioInicio" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="HorasFim" class="control-label"></label>
-                <input asp-for="HorasFim" class="form-control" type="time" name="horasFim" />
-                <span asp-validation-for="HorasFim" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Sala" class="control-label"></label>
-                <input asp-for="Sala" class="form-control" />
-                <span asp-validation-for="Sala" class="text-danger"></span>
-			</div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Create" role="form" aria-labelledby="formTitle">
+                <fieldset>
+                    <legend id="formTitle" class="sr-only">Formulário para criar nova turma</legend>
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Cadeira" class="control-label">Nome da Cadeira</label>
+                        <input asp-for="Cadeira" class="form-control" aria-required="true"
+                               aria-describedby="cadeiraHelp" />
+                        <small id="cadeiraHelp" class="form-text text-muted">
+                            Digite o nome da disciplina/cadeira.
+                        </small>
+                        <span asp-validation-for="Cadeira" class="text-danger" role="alert"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Nome" class="control-label">Nome da Turma</label>
+                        <input asp-for="Nome" class="form-control" aria-required="true" />
+                        <span asp-validation-for="Nome" class="text-danger" role="alert"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="DiaSemana" class="control-label">Dia da Semana</label>
+                        <select asp-for="DiaSemana" class="form-control" aria-required="true">
+                            <option value="">-- Selecione o dia --</option>
+                            <option value="Segunda">Segunda-feira</option>
+                            <option value="Terça">Terça-feira</option>
+                            <option value="Quarta">Quarta-feira</option>
+                            <option value="Quinta">Quinta-feira</option>
+                            <option value="Sexta">Sexta-feira</option>
+                        </select>
+                        <span asp-validation-for="DiaSemana" class="text-danger" role="alert"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="HorarioInicio" class="control-label">Horário de Início</label>
+                        <input asp-for="HorarioInicio" class="form-control" type="time"
+                               aria-required="true" aria-label="Horário de início da aula" />
+                        <span asp-validation-for="HorarioInicio" class="text-danger" role="alert"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="HorasFim" class="control-label">Horário de Fim</label>
+                        <input asp-for="HorasFim" class="form-control" type="time"
+                               aria-required="true" aria-label="Horário de término da aula" />
+                        <span asp-validation-for="HorasFim" class="text-danger" role="alert"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Sala" class="control-label">Sala</label>
+                        <input asp-for="Sala" class="form-control" aria-required="true" />
+                        <span asp-validation-for="Sala" class="text-danger" role="alert"></span>
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <button type="submit" class="btn btn-red" aria-label="Criar nova turma">
+                            Criar Turma
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary ml-2" aria-label="Voltar para a lista de turmas">
+                            Voltar
+                        </a>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+</main>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

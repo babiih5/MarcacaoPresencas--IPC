@@ -1,61 +1,73 @@
 ﻿@model Trab.Models.AlunoTurma
 
 @{
+    Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Adicionar Aluno";
 }
 
-<h1>Adicionar Aluno à Turma</h1>
-<hr />
+<main role="main" class="container" aria-labelledby="adicionarAlunoTitle">
+    <h1 id="adicionarAlunoTitle">Adicionar Aluno à Turma</h1>
 
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <!-- ID da Turma (Oculto) -->
-            <input type="hidden" asp-for="IdTurma" value="@ViewBag.IdTurma" />
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Create" role="form" aria-labelledby="formTitle">
+                <fieldset>
+                    <legend id="formTitle" class="sr-only">Formulário para adicionar aluno à turma</legend>
+                    <!-- ID da Turma (Oculto) -->
+                    <input type="hidden" asp-for="IdTurma" value="@ViewBag.IdTurma" />
 
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
 
+                    <!-- Selecionar Aluno pelo Nome -->
+                    <div class="form-group mb-3">
+                        <label for="AlunoSelecionado" class="control-label">Selecione um Aluno:</label>
+                        <select id="AlunoSelecionado" name="AlunoSelecionado" class="form-control"
+                                asp-items="ViewBag.IdAluno" aria-required="true"
+                                aria-describedby="alunoValidation">
+                            <option value="">-- Selecione um aluno --</option>
+                        </select>
+                        <span class="text-danger" id="alunoValidation" role="alert"></span>
+                    </div>
 
-            <!-- Selecionar Aluno pelo Nome -->
-            <div class="form-group">
-                <label for="AlunoSelecionado" class="control-label">Selecione um Aluno:</label>
-                <select id="AlunoSelecionado" name="AlunoSelecionado" class="form-control" asp-items="ViewBag.IdAluno">
-                    <option value="">-- Selecione um aluno --</option>
-                </select>
-                <span class="text-danger" id="alunoValidation"></span>
-            </div>
+                    <!-- ID do Aluno (Pode ser editado agora) -->
+                    <div class="form-group mb-3">
+                        <label asp-for="IdAluno" class="control-label">Número Mecanográfico do Aluno:</label>
+                        <input asp-for="IdAluno" id="IdAluno" class="form-control"
+                               aria-describedby="idAlunoHelp" />
+                        <small id="idAlunoHelp" class="form-text text-muted">
+                            Digite o número mecanográfico ou selecione o aluno pelo nome acima.
+                        </small>
+                        <span asp-validation-for="IdAluno" class="text-danger" role="alert"></span>
+                    </div>
 
-            <!-- ID do Aluno (Preenchido Automaticamente) -->
-            <div class="form-group">
-                <label asp-for="IdAluno" class="control-label">Número Mecanográfico do Aluno:</label>
-                <input asp-for="IdAluno" class="form-control" readonly />
-                <span asp-validation-for="IdAluno" class="text-danger"></span>
-            </div>
-
-            <form asp-controller="AlunosTurma" asp-action="Create" method="post">
-                <!-- Envia automaticamente o IdTurma e o IdAluno ao controlador -->
-                <input type="hidden" name="IdTurma" value="@ViewBag.IdTurma" />
-                <input type="hidden" name="IdAluno" value="@ViewBag.IdAluno" />
-
-                <div class="form-group mt-3">
-                    <button type="submit" class="btn btn-primary">
-                        Adicionar Aluno
-                    </button>
-                </div>
+                    <div class="form-group mt-4">
+                        <button type="submit" class="btn btn-red" aria-label="Adicionar o aluno à turma">
+                            Adicionar Aluno
+                        </button>
+                        <a asp-controller="AlunosTurma" asp-action="Index" asp-route-id="@ViewBag.IdTurma"
+                           class="btn btn-secondary ml-2" aria-label="Voltar para a lista de alunos">
+                            Voltar
+                        </a>
+                    </div>
+                </fieldset>
             </form>
-
-        </form>
+        </div>
     </div>
-</div>
+</main>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             var selectAluno = document.getElementById("AlunoSelecionado");
             var inputIdAluno = document.getElementById("IdAluno");
             var alunoValidation = document.getElementById("alunoValidation");
-            
+
+            // Lista de alunos para busca rápida
+            var alunos = @Html.Raw(ViewBag.AlunosJson);
+
             // Função para validar a seleção
             function validateSelection() {
                 if (!selectAluno.value) {
@@ -67,26 +79,45 @@
                 }
             }
 
-            // Evento ao mudar a seleção
+            // Evento ao mudar a seleção do nome
             selectAluno.addEventListener("change", function () {
                 inputIdAluno.value = selectAluno.value;
                 validateSelection();
+                // Anunciar para leitores de tela
+                alunoValidation.setAttribute("aria-live", "polite");
             });
 
-            // Inicialização 
+            // Evento ao alterar o ID do aluno (preenche o nome)
+            inputIdAluno.addEventListener("input", function() {
+                var al = parseInt(inputIdAluno.value);
+                if (!isNaN(al)) {
+                    // Procura o aluno com este AL
+                    var alunoEncontrado = alunos.find(a => a.Al === al);
+                    if (alunoEncontrado) {
+                        // Encontrou o aluno, seleciona no dropdown
+                        selectAluno.value = al.toString();
+                        alunoValidation.textContent = "";
+                    } else {
+                        // Não encontrou o aluno
+                        selectAluno.value = "";
+                        if (inputIdAluno.value.trim() !== "") {
+                            alunoValidation.textContent = "Aluno não encontrado com este número";
+                        }
+                    }
+                } else {
+                    // Limpa a seleção se o valor não for um número válido
+                    selectAluno.value = "";
+                }
+                // Anunciar para leitores de tela
+                alunoValidation.setAttribute("aria-live", "polite");
+            });
+
+            // Inicialização
             if (selectAluno.options.length > 0 && selectAluno.value) {
                 inputIdAluno.value = selectAluno.value;
             } else {
                 inputIdAluno.value = "";
             }
-
-            // Validação do formulário
-            var form = document.querySelector("form");
-            form.addEventListener("submit", function (e) {
-                if (!validateSelection()) {
-                    e.preventDefault();
-                }
-            });
         });
     </script>
 }

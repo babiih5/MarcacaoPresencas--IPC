@@ -76,8 +76,13 @@ namespace Trab.Controllers
             // Passa a turma automaticamente
             ViewBag.IdTurma = idTurma;
 
-            // Carrega a lista de alunos no formato correto
+            // Carrega a lista de alunos para ambas as direções
             ViewBag.IdAluno = new SelectList(_context.Alunos, "Al", "Nome");
+
+            // Lista de alunos para JSON
+            ViewBag.AlunosJson = System.Text.Json.JsonSerializer.Serialize(
+                _context.Alunos.Select(a => new { a.Al, a.Nome }).ToList()
+            );
 
             return View();
         }
@@ -86,11 +91,37 @@ namespace Trab.Controllers
         // POST: AlunosTurma/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+       
         public async Task<IActionResult> Create([Bind("IdTurma,IdAluno")] AlunoTurma alunoTurma)
         {
             var aluno = await _context.Alunos.FirstOrDefaultAsync(a => a.Al == alunoTurma.IdAluno);
             Console.WriteLine($"IdTurma recebido: {alunoTurma.IdAluno}");
 
+            if (aluno == null)
+            {
+                ModelState.AddModelError("IdAluno", "Aluno não encontrado com este número mecanográfico.");
+                ViewBag.IdTurma = alunoTurma.IdTurma;
+                ViewBag.IdAluno = new SelectList(_context.Alunos, "Al", "Nome", alunoTurma.IdAluno);
+                ViewBag.AlunosJson = System.Text.Json.JsonSerializer.Serialize(
+                    _context.Alunos.Select(a => new { a.Al, a.Nome }).ToList()
+                );
+                return View(alunoTurma);
+            }
+
+            // Verificar se o aluno já está inscrito nesta turma
+            bool alunoJaInscrito = await _context.AlunoTurmas
+                .AnyAsync(at => at.IdTurma == alunoTurma.IdTurma && at.IdAluno == aluno.Id);
+
+            if (alunoJaInscrito)
+            {
+                ModelState.AddModelError("", "Este aluno já está inscrito nesta turma.");
+                ViewBag.IdTurma = alunoTurma.IdTurma;
+                ViewBag.IdAluno = new SelectList(_context.Alunos, "Al", "Nome", alunoTurma.IdAluno);
+                ViewBag.AlunosJson = System.Text.Json.JsonSerializer.Serialize(
+                    _context.Alunos.Select(a => new { a.Al, a.Nome }).ToList()
+                );
+                return View(alunoTurma);
+            }
 
             if (ModelState.IsValid)
             {
@@ -103,8 +134,12 @@ namespace Trab.Controllers
             }
 
             ViewBag.IdAluno = new SelectList(_context.Alunos, "Al", "Nome", alunoTurma.IdAluno);
+            ViewBag.AlunosJson = System.Text.Json.JsonSerializer.Serialize(
+                _context.Alunos.Select(a => new { a.Al, a.Nome }).ToList()
+            );
             return View(alunoTurma);
         }
+
 
 
 
