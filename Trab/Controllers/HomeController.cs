@@ -58,14 +58,21 @@ public class HomeController : Controller
         if (turmaAtiva != null)
         {
             //Levar os estado da presença do aluno logado para a View caso seja true
+            var today = DateTime.Now.Date;
             var presencas = _context.Presencas
-                .Where(p => p.IdAluno == alunoId && p.IdTurma == turmaAtiva.Turma.Id).ToList();
+                .Where(p => p.IdAluno == alunoId &&
+                            p.IdTurma == turmaAtiva.Turma.Id &&
+                            p.Data.Date == today)
+                .ToList();
 
-            var presente = presencas.FirstOrDefault(p => p.Estado == true);
+            var temPresenca = presencas.Any(p => p.Estado == true);
+            ViewData["Presente"] = temPresenca ? "true" : null;
+
+
 
             ViewData["Cadeira"] = turmaAtiva.Turma.Cadeira;
             ViewData["Turma"] = turmaAtiva.Turma.Nome;
-            ViewData["Presente"] = presente;
+            
         }
         else
         {
